@@ -4,8 +4,6 @@
 //
 //  Created by Anupam Beri on 20/02/2021.
 //
-
-
 import Foundation
 import UIKit
 
@@ -29,6 +27,17 @@ class SentMemesTableViewController: UIViewController, UITableViewDataSource, UIT
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // Subscribe to notification for reloading data
+        NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name(rawValue: "refresh"), object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Unsubscribe to notification for reloading data
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "refresh"), object: nil)
+    }
+    
+    @objc func refresh(notification: NSNotification) {
         self.tableView.reloadData()
     }
     

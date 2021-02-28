@@ -37,12 +37,19 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let cancelButton = UIBarButtonItem(image: UIImage(named: "Cancel"), style: .plain, target: self, action: #selector(cancel(_:)))
+        self.navigationItem.rightBarButtonItem = cancelButton
+        
         // Disable share button
         self.shareButton.isEnabled = false
         // Assign text properties & delegates
         self.setTextProperties()
     }
 
+    @objc func cancel(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Set the status of the camera button based on if the source is available
@@ -161,6 +168,8 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let object = UIApplication.shared.delegate
         let appDelegate = object as! AppDelegate
         appDelegate.memes.append(meme)
+        // Notify observers about meme added
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue : "refresh"), object: nil)
     }
     
     // Generates a Memed image
@@ -200,17 +209,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         }
         // Present the activity view controller
         self.present(activityViewController, animated: true, completion: nil)
-    }
-    
-    // Reset the image picker view, top and bottom text
-    @IBAction func cancel(_ sender: Any) {
-        // Clear the image view
-        self.imagePickerView.image = nil
-        // Clear the top and bottom text fields
-        self.topTextField.text = "TOP"
-        self.bottomTextField.text = "BOTTOM"
-        // Disable the share button as the meme edition action is cancelled
-        self.shareButton.isEnabled = false
     }
 }
 
