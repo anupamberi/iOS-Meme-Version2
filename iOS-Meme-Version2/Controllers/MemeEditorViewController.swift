@@ -17,6 +17,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
 
     // MARK: Properties and outlets
     @IBOutlet weak var imagePickerView: UIImageView!
+    @IBOutlet weak var imageView: UIView!
     @IBOutlet weak var cameraButton: UIButton!
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
@@ -37,12 +38,19 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let cancelButton = UIBarButtonItem(image: UIImage(named: "Cancel"), style: .plain, target: self, action: #selector(cancel(_:)))
+        self.navigationItem.rightBarButtonItem = cancelButton
+        
         // Disable share button
         self.shareButton.isEnabled = false
         // Assign text properties & delegates
         self.setTextProperties()
     }
 
+    @objc func cancel(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Set the status of the camera button based on if the source is available
@@ -118,7 +126,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     
     // Show the image picker to select an image
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             imagePickerView.image = image
             // Activate the share button as the image has been chosen
@@ -161,10 +168,13 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let object = UIApplication.shared.delegate
         let appDelegate = object as! AppDelegate
         appDelegate.memes.append(meme)
+        // Notify observers about meme added
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue : "refresh"), object: nil)
     }
     
     // Generates a Memed image
     func generateMemeImage() -> UIImage {
+
         // Hide navbar and toolbar
         self.setNavAndToolbarHiddenStatus(hideStatus: true)
         // Render view to an image
@@ -173,9 +183,21 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
+        // Create a rect from the imageView bounds
+        let imageViewRect:CGRect = imageView.bounds
+        let scale = memedImage.scale
+        let scaledRect = CGRect(x: imageView.frame.origin.x * scale, y: imageView.frame.origin.y * scale, width: imageViewRect.size.width * scale, height: imageViewRect.size.height * scale)
+        
+        let image: UIImage
+        // Crop the image to the bounds and scale of the surrounding imageView
+        if let cgImage = memedImage.cgImage?.cropping(to: scaledRect) {
+            image = UIImage(cgImage: cgImage, scale: scale, orientation: .up)
+        } else {
+            image = memedImage
+        }
         // Show navbar and toolbar
         self.setNavAndToolbarHiddenStatus(hideStatus: false)
-        return memedImage
+        return image
     }
     
     // Set the navbar and toolbar isHidden property to given status
@@ -200,17 +222,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         }
         // Present the activity view controller
         self.present(activityViewController, animated: true, completion: nil)
-    }
-    
-    // Reset the image picker view, top and bottom text
-    @IBAction func cancel(_ sender: Any) {
-        // Clear the image view
-        self.imagePickerView.image = nil
-        // Clear the top and bottom text fields
-        self.topTextField.text = "TOP"
-        self.bottomTextField.text = "BOTTOM"
-        // Disable the share button as the meme edition action is cancelled
-        self.shareButton.isEnabled = false
     }
 }
 
