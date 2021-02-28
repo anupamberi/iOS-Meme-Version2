@@ -76,10 +76,12 @@ extension SentMemesCollectionViewController: UICollectionViewDelegateFlowLayout 
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let itemsPerRow: CGFloat
+        
+        // Set number of items per row to 2 items in portrait mode and 4 in Lanscape mode for better visibility of the meme
         if UIDevice.current.orientation.isLandscape {
-            itemsPerRow = 5
+            itemsPerRow = 4
         } else {
-            itemsPerRow = 3
+            itemsPerRow = 2
         }
         let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
         let availableWidth = self.view.frame.width - paddingSpace
