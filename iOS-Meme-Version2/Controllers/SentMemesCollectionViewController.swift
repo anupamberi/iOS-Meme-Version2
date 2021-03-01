@@ -67,12 +67,6 @@ class SentMemesCollectionViewController: UICollectionViewController {
         let meme = self.memes[(indexPath as NSIndexPath).row]
         // Set the image, top and bottom labels
         cell.sentMemeImageView.image = meme.memedImage
-
-        // Set cell parameters
-        cell.backgroundColor = UIColor.lightGray
-        cell.layer.borderColor = UIColor.darkGray.cgColor
-        cell.layer.borderWidth = 1
-
         return cell
     }
 }
