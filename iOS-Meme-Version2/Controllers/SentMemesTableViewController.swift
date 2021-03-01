@@ -59,6 +59,12 @@ class SentMemesTableViewController: UIViewController, UITableViewDataSource, UIT
         cell.memeImage.image = sentMeme.memedImage
         cell.summary.text = "\(sentMeme.topText)...\(sentMeme.bottomText)"
         
+        // Set cell parameters
+        cell.backgroundColor = UIColor.lightGray
+        cell.layer.borderColor = UIColor.darkGray.cgColor
+        cell.layer.borderWidth = 1
+        cell.clipsToBounds = true
+        
         return cell
     }
 }
