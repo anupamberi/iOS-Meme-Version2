@@ -27,6 +27,7 @@ class SentMemesTableViewController: UIViewController, UITableViewDataSource, UIT
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.tableView.reloadData()
         // Subscribe to notification for reloading data
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name(rawValue: "refresh"), object: nil)
     }
@@ -59,12 +60,15 @@ class SentMemesTableViewController: UIViewController, UITableViewDataSource, UIT
         cell.memeImage.image = sentMeme.memedImage
         cell.summary.text = "\(sentMeme.topText)...\(sentMeme.bottomText)"
         
-        // Set cell parameters
-        cell.backgroundColor = UIColor.lightGray
-        cell.layer.borderColor = UIColor.darkGray.cgColor
-        cell.layer.borderWidth = 1
-        cell.clipsToBounds = true
-        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let memeDetailViewController = self.storyboard?.instantiateViewController(identifier: "MemeDetailViewController") as! MemeDetailViewController
+        
+        let sentMeme = self.memes[(indexPath as NSIndexPath).row]
+        memeDetailViewController.sentMeme = sentMeme
+        
+        self.navigationController?.pushViewController(memeDetailViewController, animated: true)
     }
 }
