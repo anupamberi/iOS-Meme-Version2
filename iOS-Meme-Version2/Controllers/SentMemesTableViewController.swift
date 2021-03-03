@@ -9,6 +9,7 @@ import UIKit
 
 // MARK: - The table representation of the Sent Memes
 class SentMemesTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
     // MARK: Properties
     
     @IBOutlet weak var tableView: UITableView!
@@ -21,12 +22,14 @@ class SentMemesTableViewController: UIViewController, UITableViewDataSource, UIT
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Add a button to create a new meme
         let addMemeButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addMeme(_:)))
         self.navigationItem.rightBarButtonItem = addMemeButton
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.tableView.reloadData()
         // Subscribe to notification for reloading data
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name(rawValue: "refresh"), object: nil)
     }
@@ -56,9 +59,18 @@ class SentMemesTableViewController: UIViewController, UITableViewDataSource, UIT
         let sentMeme = self.memes[(indexPath as NSIndexPath).row]
         
         // Set the imagem the top and the bottom text
-        cell.memeImage.image = sentMeme.memedImage
+        cell.memeImage.image = ImageUtil.crop(image: sentMeme.memedImage)
         cell.summary.text = "\(sentMeme.topText)...\(sentMeme.bottomText)"
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let memeDetailViewController = self.storyboard?.instantiateViewController(identifier: "MemeDetailViewController") as! MemeDetailViewController
+        
+        let sentMeme = self.memes[(indexPath as NSIndexPath).row]
+        memeDetailViewController.sentMeme = sentMeme
+        
+        self.navigationController?.pushViewController(memeDetailViewController, animated: true)
     }
 }

@@ -41,6 +41,7 @@ class SentMemesCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Add a button to create a new meme
         let addMemeButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addMeme(_:)))
         self.navigationItem.rightBarButtonItem = addMemeButton
     }
@@ -64,38 +65,51 @@ class SentMemesCollectionViewController: UICollectionViewController {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SentMemeCollectionViewCell", for: indexPath) as! SentMemeCollectionViewCell
         let meme = self.memes[(indexPath as NSIndexPath).row]
-        
         // Set the image, top and bottom labels
-        cell.sentMemeImageView.image = meme.memedImage
-
+        cell.sentMemeImageView.image = ImageUtil.crop(image: meme.memedImage)
+        //cell.sentMemeImageView.image = meme.memedImage
         return cell
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let memeDetailViewController = self.storyboard?.instantiateViewController(identifier: "MemeDetailViewController") as! MemeDetailViewController
+        
+        let sentMeme = self.memes[(indexPath as NSIndexPath).row]
+        memeDetailViewController.sentMeme = sentMeme
+        
+        self.navigationController?.pushViewController(memeDetailViewController, animated: true)
+    }
 }
+
+// MARK : A flow layout delegate for assigning each collection view cell its size and inter item spacing etc.
 
 extension SentMemesCollectionViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let itemsPerRow: CGFloat
-        
-        // Set number of items per row to 2 items in portrait mode and 4 in Lanscape mode for better visibility of the meme
+        // Set the number of items to be displayed in a row dependent on the device orientation
         if UIDevice.current.orientation.isLandscape {
-            itemsPerRow = 4
+            itemsPerRow = 5
         } else {
-            itemsPerRow = 2
+            itemsPerRow = 3
         }
         let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
         let availableWidth = self.view.frame.width - paddingSpace
         let widthPerItem = availableWidth / itemsPerRow
-        
+
         return CGSize(width: widthPerItem, height: widthPerItem)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-      return sectionInsets
+        return UIEdgeInsets.zero
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-      return sectionInsets.left
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
     }
 }

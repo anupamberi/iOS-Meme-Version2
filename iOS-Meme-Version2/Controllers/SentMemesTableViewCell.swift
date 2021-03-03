@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+// MARK : Represents the meme as a table view cell 
 class SentMemesTableViewCell: UITableViewCell {
     
     @IBOutlet weak var memeImage: UIImageView!

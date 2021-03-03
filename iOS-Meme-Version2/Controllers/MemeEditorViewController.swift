@@ -17,7 +17,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
 
     // MARK: Properties and outlets
     @IBOutlet weak var imagePickerView: UIImageView!
-    @IBOutlet weak var imageView: UIView!
     @IBOutlet weak var cameraButton: UIButton!
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
@@ -168,13 +167,12 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let object = UIApplication.shared.delegate
         let appDelegate = object as! AppDelegate
         appDelegate.memes.append(meme)
-        // Notify observers about meme added
+        // Notify observers about a new meme added
         NotificationCenter.default.post(name: NSNotification.Name(rawValue : "refresh"), object: nil)
     }
     
     // Generates a Memed image
     func generateMemeImage() -> UIImage {
-
         // Hide navbar and toolbar
         self.setNavAndToolbarHiddenStatus(hideStatus: true)
         // Render view to an image
@@ -182,22 +180,10 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
         let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
-        
-        // Create a rect from the imageView bounds
-        let imageViewRect:CGRect = imageView.bounds
-        let scale = memedImage.scale
-        let scaledRect = CGRect(x: imageView.frame.origin.x * scale, y: imageView.frame.origin.y * scale, width: imageViewRect.size.width * scale, height: imageViewRect.size.height * scale)
-        
-        let image: UIImage
-        // Crop the image to the bounds and scale of the surrounding imageView
-        if let cgImage = memedImage.cgImage?.cropping(to: scaledRect) {
-            image = UIImage(cgImage: cgImage, scale: scale, orientation: .up)
-        } else {
-            image = memedImage
-        }
+
         // Show navbar and toolbar
         self.setNavAndToolbarHiddenStatus(hideStatus: false)
-        return image
+        return memedImage
     }
     
     // Set the navbar and toolbar isHidden property to given status
