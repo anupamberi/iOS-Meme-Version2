@@ -167,13 +167,12 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let object = UIApplication.shared.delegate
         let appDelegate = object as! AppDelegate
         appDelegate.memes.append(meme)
-        // Notify observers about meme added
+        // Notify observers about a new meme added
         NotificationCenter.default.post(name: NSNotification.Name(rawValue : "refresh"), object: nil)
     }
     
     // Generates a Memed image
     func generateMemeImage() -> UIImage {
-
         // Hide navbar and toolbar
         self.setNavAndToolbarHiddenStatus(hideStatus: true)
         // Render view to an image
@@ -184,7 +183,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
 
         // Show navbar and toolbar
         self.setNavAndToolbarHiddenStatus(hideStatus: false)
-        print("MemedImage Size \(memedImage.size)")
         return memedImage
     }
     

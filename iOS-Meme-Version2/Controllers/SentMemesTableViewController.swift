@@ -9,6 +9,7 @@ import UIKit
 
 // MARK: - The table representation of the Sent Memes
 class SentMemesTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
     // MARK: Properties
     
     @IBOutlet weak var tableView: UITableView!
@@ -21,6 +22,7 @@ class SentMemesTableViewController: UIViewController, UITableViewDataSource, UIT
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Add a button to create a new meme
         let addMemeButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addMeme(_:)))
         self.navigationItem.rightBarButtonItem = addMemeButton
     }
@@ -57,7 +59,7 @@ class SentMemesTableViewController: UIViewController, UITableViewDataSource, UIT
         let sentMeme = self.memes[(indexPath as NSIndexPath).row]
         
         // Set the imagem the top and the bottom text
-        cell.memeImage.image = sentMeme.memedImage
+        cell.memeImage.image = ImageUtil.crop(image: sentMeme.memedImage)
         cell.summary.text = "\(sentMeme.topText)...\(sentMeme.bottomText)"
         
         return cell

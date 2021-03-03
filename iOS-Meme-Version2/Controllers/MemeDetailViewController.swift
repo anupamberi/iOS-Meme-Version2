@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+// MARK : This view controller displays the original meme with its aspect ratio
 class MemeDetailViewController: UIViewController {
     
     var sentMeme: Meme!

@@ -41,7 +41,7 @@ class SentMemesCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        // Add a button to create a new meme
         let addMemeButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addMeme(_:)))
         self.navigationItem.rightBarButtonItem = addMemeButton
     }
@@ -66,8 +66,8 @@ class SentMemesCollectionViewController: UICollectionViewController {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SentMemeCollectionViewCell", for: indexPath) as! SentMemeCollectionViewCell
         let meme = self.memes[(indexPath as NSIndexPath).row]
         // Set the image, top and bottom labels
-        //cell.sentMemeImageView.image = meme.memedImage.crop(image: meme.memedImage)
-        cell.sentMemeImageView.image = meme.memedImage
+        cell.sentMemeImageView.image = ImageUtil.crop(image: meme.memedImage)
+        //cell.sentMemeImageView.image = meme.memedImage
         return cell
     }
     
@@ -81,44 +81,18 @@ class SentMemesCollectionViewController: UICollectionViewController {
     }
 }
 
-extension UIImage {
-    func crop(image: UIImage) -> UIImage {
-        let contextImage: UIImage = UIImage(cgImage: image.cgImage!)
-        let contextSize: CGSize = contextImage.size
-        
-        let posX: CGFloat
-        let posY: CGFloat
-        let newWidth: CGFloat
-        let newHeight: CGFloat
-        
-        if (contextSize.width > contextSize.height) {
-            posY = 0
-            posX = ((contextSize.width - contextSize.height) / 2)
-            newWidth = contextSize.height
-            newHeight = contextSize.height
-        } else {
-            posY = ((contextSize.height - contextSize.width) / 2)
-            posX = 0
-            newWidth = contextSize.width
-            newHeight = contextSize.width
-        }
-        
-        let croppingRectangle: CGRect = CGRect(x: posX, y: posY, width: newWidth, height: newHeight)
-        
-        // Create bitmap image from context using the rect
-        let imageRef: CGImage = (contextImage.cgImage?.cropping(to: croppingRectangle))!
-
-        // Create a new image based on the imageRef and rotate back to the original orientation
-        let croppedImage: UIImage = UIImage(cgImage: imageRef, scale: image.scale, orientation: image.imageOrientation)
-        
-        return croppedImage
-    }
-}
+// MARK : A flow layout delegate for assigning each collection view cell its size and inter item spacing etc.
 
 extension SentMemesCollectionViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemsPerRow: CGFloat = 3
+        let itemsPerRow: CGFloat
+        // Set the number of items to be displayed in a row dependent on the device orientation
+        if UIDevice.current.orientation.isLandscape {
+            itemsPerRow = 5
+        } else {
+            itemsPerRow = 3
+        }
         let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
         let availableWidth = self.view.frame.width - paddingSpace
         let widthPerItem = availableWidth / itemsPerRow
@@ -127,7 +101,7 @@ extension SentMemesCollectionViewController: UICollectionViewDelegateFlowLayout 
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-      return sectionInsets
+        return UIEdgeInsets.zero
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int
